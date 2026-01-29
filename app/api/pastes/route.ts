@@ -5,23 +5,30 @@ export async function POST(req: Request) {
   const body = await req.json();
 
   if (!body?.content) {
-    return Response.json(
-      { error: "Content is required" },
+    return new Response(
+      JSON.stringify({ error: "Content required" }),
       { status: 400 }
     );
   }
 
   const id = nanoid(8);
-  const now = Date.now();
 
   await kv.set(`paste:${id}`, {
     content: body.content,
-    createdAt: now,
+    createdAt: Date.now(),
   });
 
-  return Response.json({
-    id,
-    url: `/p/${id}`,
-  });
+  return new Response(
+    JSON.stringify({
+      id,
+      url: `/p/${id}`,
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
+
+
 
